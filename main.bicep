@@ -1,5 +1,6 @@
 param location string
 param vnet object
+param storageAccountName string
 
 module devnet 'modules/network/vnet.bicep' = {
   name: 'dev-network'
@@ -10,4 +11,12 @@ module devnet 'modules/network/vnet.bicep' = {
     subnets: vnet.subnets
   }
 
+}
+
+module storage 'modules/storage/storageAccount.bicep' = {
+  name: 'stlearningdevaueast09'
+  params: {
+    name: storageAccountName
+    location: location
+  }
 }
