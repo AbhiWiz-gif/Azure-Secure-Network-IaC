@@ -2,6 +2,22 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "winWebAdminPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/115fcb0f-8cae-4e50-a28d-0e0e871053df/resourceGroups/app-grp/providers/Microsoft.KeyVault/vaults/keyvault0099"
+        },
+        "secretName": "win-web-admin-password"
+      }
+    },
+    "winWebConfig": {
+      "value": {
+          "vmSize": "Standard_B2ats_v2",
+          "adminUserName": "azureadmin",
+          "baseName": "dev-web",
+          "count": 2
+        }
+    },
     "location": {"value": "australiaeast"},
     "storageAccountName": {"value": "stlearningdevaueast09"},
     "vnet": {
@@ -10,7 +26,8 @@
         "addressPrefixes": ["10.0.0.0/16"],
         "subnets": [
           {"name": "snet-dev-aueast-web-01", "prefix": "10.0.0.0/24"},
-          {"name": "snet-dev-aueast-db-01", "prefix": "10.0.1.0/24"}
+          {"name": "snet-dev-aueast-db-01", "prefix": "10.0.1.0/24"},
+          {"name": "AzureBastionSubnet", "prefix": "10.0.2.0/24"}
         ]
       }
     },
