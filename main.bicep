@@ -59,6 +59,8 @@ module winWeb 'modules/compute/windowsVm.bicep' = {
     adminUserName:winWebConfig.adminUserName
     subnetId: devnet.outputs.subnetIds[0].id
     adminPassword:winWebAdminPassword
+    scriptUri:winWebConfig.scriptUri
+    scriptCommand: 'powershell -ExecutionPolicy Bypass -File .\\setup-iis.ps1'
   }
   dependsOn: [sharednsg]
 }

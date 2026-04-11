@@ -1,3 +1,10 @@
+@description('URI to the scirpt file(e.g, SAS URL from Storage or a raw GitHub URL)')
+param scriptUri string
+
+@secure()
+@description('Command to execute on the VM after the file is downloaded')
+param scriptCommand string= 'powershell -ExecutionPolicy Bypass -File .\\setup-iis.ps1'
+
 @description('Azure Region')
 param location string
 
@@ -72,4 +79,28 @@ resource vms 'Microsoft.Compute/virtualMachines@2025-04-01' = [for (vmName, i) i
     }
   }
 }
+]
+
+resource vmCse 'Microsoft.Compute/virtualMachines/extensions@2025-04-01' = [
+  for i in range(0, length(vmNames)): {
+    name: 'cse-init'
+    location: location
+    parent: vms[i]
+    properties: {
+      publisher: 'Microsoft.Compute'
+      type: 'CustomScriptExtension'
+      typeHandlerVersion: '1.10'
+      autoUpgradeMinorVersion: true
+      settings: {
+        fileUris: [
+          scriptUri 
+        ]
+      }
+      protectedSettings: {
+        commandToExecute: scriptCommand
+      }
+
+    }
+
+  }
 ]
