@@ -2,6 +2,12 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "bastion": {
+      "value": {
+        "pipName": "pip-bas-dev-aueast-01",
+        "name": "bas-dev-aueast-01"
+      }
+    },
     "winWebAdminPassword": {
       "reference": {
         "keyVault": {

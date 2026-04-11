@@ -3,7 +3,9 @@ param vnet object
 param storageAccountName string
 param nsg object
 param winWebConfig object
+@secure()
 param winWebAdminPassword string
+param bastion object
 
 var nsgAttachments = [
   {
@@ -61,3 +63,23 @@ module winWeb 'modules/compute/windowsVm.bicep' = {
   dependsOn: [sharednsg]
 }
 
+module basPip 'modules/network/publicIp.bicep' = {
+  name: 'bastion-ip'
+  params: {
+    name: bastion.pipName
+    location: location
+    sku: 'Standard'
+    allocation: 'Static'
+
+  }
+}
+
+module bastionhost 'modules/security/bastion.bicep' = {
+  name: 'bastion'
+  params:{
+    name:bastion.name
+    location:location
+    subnetId: devnet.outputs.subnetIds[2].id
+    publicIPId: basPip.outputs.id
+  }
+}
