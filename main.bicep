@@ -6,6 +6,7 @@ param winWebConfig object
 @secure()
 param winWebAdminPassword string
 param bastion object
+param lbName string
 
 var nsgAttachments = [
   {
@@ -49,6 +50,15 @@ module sharednsg 'modules/security/nsg.bicep' = {
   dependsOn: [devnet]
 }
 
+module ilb 'modules/network/internalLB.bicep' = {
+  name: 'ilb'
+  params: {
+    location: location
+    lbName: lbName
+    subnetId: devnet.outputs.subnetIds[0].id
+  }
+}
+
 module winWeb 'modules/compute/windowsVm.bicep' = {
   name:'win-web-dev'
   params:{
@@ -61,6 +71,7 @@ module winWeb 'modules/compute/windowsVm.bicep' = {
     adminPassword:winWebAdminPassword
     scriptUri:winWebConfig.scriptUri
     scriptCommand: 'powershell -ExecutionPolicy Bypass -File .\\setup-iis.ps1'
+    lbBackendPoolId: ilb.outputs.backendPoolId
   }
   dependsOn: [sharednsg]
 }

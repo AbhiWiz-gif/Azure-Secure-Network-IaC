@@ -1,3 +1,5 @@
+param lbBackendPoolId string
+
 @description('URI to the scirpt file(e.g, SAS URL from Storage or a raw GitHub URL)')
 param scriptUri string
 
@@ -39,6 +41,9 @@ resource nics 'Microsoft.Network/networkInterfaces@2025-05-01' = [for (nicName, 
       properties:{
         privateIPAllocationMethod: 'Dynamic'
         subnet: {id: subnetId}
+        loadBalancerBackendAddressPools:[
+          {id:lbBackendPoolId}
+        ]
       }
     }]
   }
