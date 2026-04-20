@@ -8,6 +8,14 @@ param winWebAdminPassword string
 param bastion object
 param lbName string
 
+param linuxWebConfig object
+@secure()
+param linuxWebAdminPassword string
+param testvnet object
+
+param localVnetName string
+param remoteVnetName string
+
 var nsgAttachments = [
   {
     vnetName:vnet.name
@@ -18,6 +26,11 @@ var nsgAttachments = [
     vnetName:vnet.name
     subnetName:vnet.subnets[1].name
     addressPrefix:vnet.subnets[1].prefix
+  }
+  {
+    vnetName: testvnet.name
+    subnetName: testvnet.subnets[0].name
+    addressPrefix: testvnet.subnets[0].prefix
   }
 ]
 
@@ -94,5 +107,37 @@ module bastionhost 'modules/security/bastion.bicep' = {
     location:location
     subnetId: devnet.outputs.subnetIds[2].id
     publicIPId: basPip.outputs.id
+  }
+}
+
+module testnet 'modules/network/vnet.bicep' = {
+  name: 'test-network'
+  params: {
+    name: testvnet.name
+    location: location
+    addressPrefixes: testvnet.addressPrefixes
+    subnets: testvnet.subnets
+  }
+}
+
+module linuxVm 'modules/compute/linuxVm.bicep' = {
+  params: {
+    location: location
+    baseName: linuxWebConfig.baseName
+    vmSize: linuxWebConfig.vmSize
+    subnetId: testnet.outputs.subnetIds[0].id
+    count: linuxWebConfig.count
+    adminUserName: linuxWebConfig.adminUsername
+    adminPassword: linuxWebAdminPassword
+  }
+}
+
+module vnetpeering 'modules/network/vnetpeering.bicep' = {
+  name: 'vnet-peering-dev-aueast'
+  params: {
+    localVnetName:vnet.name
+    remoteVnetName:testvnet.name
+    localVnetId: devnet.outputs.vnetId
+    remoteVnetId: testnet.outputs.vnetId
   }
 }

@@ -34,3 +34,4 @@ output subnetIds array = [
   }
 ]
 
+output vnetId string = vnet.id

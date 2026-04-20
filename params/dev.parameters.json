@@ -2,6 +2,15 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "localVnetName": {"value": "vnet-dev-aueast"},
+    "remoteVnetName": { "value": "vnet-test-aueast"},
+    "linuxWebConfig": {
+      "value": {
+        "baseName": "test-app",
+        "vmSize": "Standard_E2s_v3",
+        "count": 1,
+        "adminUsername": "linuxadmin"
+      }},
     "lbName": {"value": "ilb-dev-aueast-01"},
     "bastion": {
       "value": {
@@ -15,6 +24,14 @@
           "id": "/subscriptions/115fcb0f-8cae-4e50-a28d-0e0e871053df/resourceGroups/app-grp/providers/Microsoft.KeyVault/vaults/keyvault0099"
         },
         "secretName": "win-web-admin-password"
+      }
+    },
+    "linuxWebAdminPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/115fcb0f-8cae-4e50-a28d-0e0e871053df/resourceGroups/app-grp/providers/Microsoft.KeyVault/vaults/keyvault0099"
+        },
+        "secretName": "linux-web-admin-password"
       }
     },
     "winWebConfig": {
@@ -36,6 +53,17 @@
           {"name": "snet-dev-aueast-web-01", "prefix": "10.0.0.0/24"},
           {"name": "snet-dev-aueast-db-01", "prefix": "10.0.1.0/24"},
           {"name": "AzureBastionSubnet", "prefix": "10.0.2.0/24"}
+        ]
+      }
+    },
+    "testvnet":{
+      "value": {
+        "name": "vnet-test-aueast",
+        "addressPrefixes": ["10.1.0.0/16"],
+        "subnets": [
+          {
+            "name": "snet-test-aueast-app", "prefix": "10.1.0.0/24"
+          }
         ]
       }
     },
